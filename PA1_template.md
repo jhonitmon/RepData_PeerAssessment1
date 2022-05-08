@@ -67,6 +67,17 @@ hist(sum_data$steps)
 
 ![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
+```r
+png(filename = "./figure/plot1.png")
+hist(sum_data$steps)
+dev.off()
+```
+
+```
+## png 
+##   2
+```
+
 3. Calculate and report the mean and median of the total number of steps taken per day
 
 ```r
@@ -93,11 +104,24 @@ median_steps
 
 ```r
 interval_mean <- aggregate(steps ~ interval, data = data,mean,na.rm = T)
+interval_mean$interval <- as.integer(interval_mean$interval)
 plot(steps ~ interval,data = interval_mean,type = "l")
 lines(interval_mean$steps)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+```r
+png(filename = "./figure/plot2.png")
+plot(steps ~ interval,data = interval_mean,type = "l")
+lines(interval_mean$steps)
+dev.off()
+```
+
+```
+## png 
+##   2
+```
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -108,7 +132,7 @@ max_interval_steps
 
 ```
 ##     interval    steps
-## 104      835 206.1698
+## 104      104 206.1698
 ```
 
 ## Imputing missing values
@@ -123,12 +147,13 @@ na_sum
 ```
 ## [1] 2304
 ```
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+2. Devise a strategy for fillingprint(subset(interval_mean,interval == data_filled$interval[i])) in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ```r
 data_filled = data
+data_filled$interval <- as.integer(data_filled$interval)
 for (i in 1:nrow(data_filled)) {
   if(is.na(data_filled$steps[i])) {
     data_filled$steps[i] = subset(interval_mean,interval == data_filled$interval[i])$steps
@@ -140,12 +165,21 @@ for (i in 1:nrow(data_filled)) {
 
 ```r
 sum_data_filled <- group_by(data_filled,date) %>% summarise(steps = sum(steps))
-par(mfrow = c(1,2))
-hist(sum_data$steps)
 hist(sum_data_filled$steps)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+```r
+png(filename = "./figure/plot3.png")
+hist(sum_data_filled$steps)
+dev.off()
+```
+
+```
+## png 
+##   2
+```
 
 ```r
 mean_steps_filled <- mean(sum_data_filled$steps)
@@ -175,7 +209,7 @@ median_change <- (1 - median_steps/median_steps_filled) * 100
 
 The mean did not change and the median changed bz about 0.011 %.
 Filling the data made the total daily number of steps bigger.
-
+kniu
 ## Are there differences in activity patterns between weekdays and weekends?
 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
@@ -199,7 +233,19 @@ data_filled_mean <- aggregate(steps ~ interval + dayType, data = data_filled,mea
 data_filled_mean$interval <- as.integer(data_filled_mean$interval)
 library(lattice)
 xyplot(steps ~ interval | dayType, data_filled_mean, type = "l", layout = c(1, 2), 
-    xlab = "Interval", ylab = "Number of steps",)
+    xlab = "Interval", ylab = "Number of steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+```r
+png(filename = "./figure/plot4.png")
+xyplot(steps ~ interval | dayType, data_filled_mean, type = "l", layout = c(1, 2), 
+    xlab = "Interval", ylab = "Number of steps")
+dev.off()
+```
+
+```
+## png 
+##   2
+```

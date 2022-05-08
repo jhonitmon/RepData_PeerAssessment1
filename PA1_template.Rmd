@@ -26,6 +26,9 @@ sum_data <- sum_data[complete.cases(sum_data$steps),]
 2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 ```{r}
 hist(sum_data$steps)
+png(filename = "./figure/plot1.png")
+hist(sum_data$steps)
+dev.off()
 ```
 
 3. Calculate and report the mean and median of the total number of steps taken per day
@@ -43,8 +46,13 @@ median_steps
 1. Make a time series plot (i.e. type = "l"\color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ```{r}
 interval_mean <- aggregate(steps ~ interval, data = data,mean,na.rm = T)
+interval_mean$interval <- as.integer(interval_mean$interval)
 plot(steps ~ interval,data = interval_mean,type = "l")
 lines(interval_mean$steps)
+png(filename = "./figure/plot2.png")
+plot(steps ~ interval,data = interval_mean,type = "l")
+lines(interval_mean$steps)
+dev.off()
 ```
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -60,11 +68,12 @@ max_interval_steps
 na_sum = sum(is.na(data$steps)) 
 na_sum
 ```
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+2. Devise a strategy for fillingprint(subset(interval_mean,interval == data_filled$interval[i])) in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
 data_filled = data
+data_filled$interval <- as.integer(data_filled$interval)
 for (i in 1:nrow(data_filled)) {
   if(is.na(data_filled$steps[i])) {
     data_filled$steps[i] = subset(interval_mean,interval == data_filled$interval[i])$steps
@@ -75,9 +84,10 @@ for (i in 1:nrow(data_filled)) {
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```{r}
 sum_data_filled <- group_by(data_filled,date) %>% summarise(steps = sum(steps))
-par(mfrow = c(1,2))
-hist(sum_data$steps)
 hist(sum_data_filled$steps)
+png(filename = "./figure/plot3.png")
+hist(sum_data_filled$steps)
+dev.off()
 ```
 ```{r}
 mean_steps_filled <- mean(sum_data_filled$steps)
@@ -92,7 +102,7 @@ median_change <- (1 - median_steps/median_steps_filled) * 100
 
 The mean did not change and the median changed bz about 0.011 %.
 Filling the data made the total daily number of steps bigger.
-
+kniu
 ## Are there differences in activity patterns between weekdays and weekends?
 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
@@ -114,5 +124,9 @@ data_filled_mean <- aggregate(steps ~ interval + dayType, data = data_filled,mea
 data_filled_mean$interval <- as.integer(data_filled_mean$interval)
 library(lattice)
 xyplot(steps ~ interval | dayType, data_filled_mean, type = "l", layout = c(1, 2), 
-    xlab = "Interval", ylab = "Number of steps",)
+    xlab = "Interval", ylab = "Number of steps")
+png(filename = "./figure/plot4.png")
+xyplot(steps ~ interval | dayType, data_filled_mean, type = "l", layout = c(1, 2), 
+    xlab = "Interval", ylab = "Number of steps")
+dev.off()
 ```
